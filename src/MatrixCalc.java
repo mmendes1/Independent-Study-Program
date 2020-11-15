@@ -264,13 +264,13 @@ public class MatrixCalc {
             int m22 = A[3][1] * B[1][2];
             int m23 = A[3][3] * B[3][3];
 
-        } /**else {
+        } else {
 
             int[][] M1 = ladermanMult(minus(plus(plus(A11,A12), A13), minus(minus(A21, A22) , minus(A32, A33))), B22);
-            int[][] M2 = ladermanMult(minus(A11, A21), minus(B22, B12));;
-            int[][] M3 = ladermanMult( , );;
-            int[][] M4 = ladermanMult( , );;
-            int[][] M5 = ladermanMult( , );;
+            int[][] M2 = ladermanMult(minus(A11, A21), minus(B22, B12));
+            int[][] M3 = ladermanMult(A22 , plus(minus(minus(minus(plus(minus(B12, B11), B21), B22), B23), B31), B33));
+            int[][] M4 = ladermanMult(plus(minus(A21, A11), A22) , plus(minus(B11, B13)), B22);
+            int[][] M5 = ladermanMult(plus(A21, A22), minus(B12, B11));
             int[][] M6 = ladermanMult( , );;
             int[][] M7 = ladermanMult( , );;
             int[][] M8 = ladermanMult( , );;
