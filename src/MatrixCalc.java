@@ -272,12 +272,12 @@ public class MatrixCalc {
             split(B, B32, n2thirds, nthird);
             split(B, B33, n2thirds, n2thirds);
 
-            /**int[][] M1 = ladermanMult( , );
-            int[][] M2 = ladermanMult( , );
-            int[][] M3 = ladermanMult( , );
-            int[][] M4 = ladermanMult( , );
-            int[][] M5 = ladermanMult( , );
-            int[][] M6 = ladermanMult( , );
+            int[][] M1 = ladermanMult(minus(minus(minus(minus(plus(plus(A11, A12), A13), A21), A22), A32), A33), B22);
+            int[][] M2 = ladermanMult(minus(A11, A12), minus(B22, B12));
+            int[][] M3 = ladermanMult(A22, plus(minus(minus(minus(plus(minus(B12, B11), B21), B22), B23), B31), B33));
+            int[][] M4 = ladermanMult(plus(minus(A21, A11), A22), plus(minus(B11, B12), B22));
+            int[][] M5 = ladermanMult(plus(A21, A22), minus(B12, B11));
+            int[][] M6 = ladermanMult(A11, B11);
             int[][] M7 = ladermanMult( , );
             int[][] M8 = ladermanMult( , );
             int[][] M9 = ladermanMult( , );
@@ -295,14 +295,28 @@ public class MatrixCalc {
             int[][] M21 = ladermanMult( , );
             int[][] M22 = ladermanMult( , );
             int[][] M23 = ladermanMult( , );
-            **/
 
+            int[][] C11 = ;
+            int[][] C12 = ;
+            int[][] C13 = ;
+            int[][] C21 = ;
+            int[][] C22 = ;
+            int[][] C23 = ;
+            int[][] C31 = ;
+            int[][] C32 = ;
+            int[][] C33 = ;
+
+            combine(C11, result, 0, 0);
+            combine(C12, result, 0, nthird);
+            combine(C13, result, 0, n2thirds);
+            combine(C21, result, nthird, 0);
+            combine(C22, result, nthird, nthird);
+            combine(C23, result, nthird, n2thirds);
+            combine(C31, result, n2thirds, 0);
+            combine(C32, result, n2thirds, nthird);
+            combine(C33, result, n2thirds, n2thirds);
         }
-
         return result;
-
-
-
     }
 
     public void split (int[][] matrix, int[][] splitMatrix, int i2Pos, int j2Pos) {
