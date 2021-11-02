@@ -30,7 +30,7 @@ import java.io.File;
 //CHECK RANDOM 10X10 MATRIX TO SEE IF CALCULATIONS ARE CORRECT
 public class MatrixCalc {
 
-    private static int size = 0;
+    private static int size = 3;
     private static int[][] matrix1;
     private static int[][] matrix2;
     private static long durationBasic, durationStrassen;
@@ -41,8 +41,11 @@ public class MatrixCalc {
         MatrixCalc calc = new MatrixCalc();
 
         calc.createMatrices();
+        calc.ladermanMult(matrix1, matrix2);
 
+        //result = calc.ladermanMult(matrix1, matrix2);
 
+        //calc.printMatrix(result, "Result", size);
         /**while (x < 50) {
             calc.createMatrices();
             long strassenStartTime = System.nanoTime();
@@ -66,30 +69,26 @@ public class MatrixCalc {
 
     public void createMatrices() {
         Random rand = new Random();
-        if(size > 4) { return; }
-        size += 2;
-            matrix1 = new int[size][size];
 
+        matrix1 = new int[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                int random = rand.nextInt(100 + 101) - 100;
+                int random = rand.nextInt(1 + 2) - 1;
                     matrix1[i][j] = random;
             }
         }
-        if (!checkSize(size, 2)) { matrix1 = appendMatrix(matrix1, size); }
         printMatrix(matrix1, "Matrix 1", size);
 
 
         matrix2 = new int[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                int random = 1 + rand.nextInt(100 + 101) - 100;
+                int random = 1 + rand.nextInt(1 + 2) - 1;
                 //System.out.println("Value: " + random);
                 matrix2[i][j] = random;
             }
         }
-        if (!checkSize(size, 2)) { matrix2 = appendMatrix(matrix2, size); }
-        //printMatrix(matrix2, "Matrix 2");
+        printMatrix(matrix2, "Matrix 2", size);
     }
 
     public int[][] basicMult (int[][] A, int[][] B) {
@@ -135,6 +134,12 @@ public class MatrixCalc {
         }
 
         else {
+            if (!checkSize(size, 2)) 
+            { 
+                matrix1 = appendMatrix(matrix1, size); 
+                matrix2 = appendMatrix(matrix2, size); 
+            }
+
             int[][] A11 = new int[nhalf][nhalf];
             int[][] A12 = new int[nhalf][nhalf];
             int[][] A21 = new int[nhalf][nhalf];
@@ -182,12 +187,56 @@ public class MatrixCalc {
 
     public int[][] ladermanMult(int[][] A, int[][]B) {
         int n = A.length;
-        int[][] product = new int[n][n];
+        int[][] result = new int[n][n];
         int nthird = n/3, n2thirds = 2 * nthird;
 
-        if (n == 1) product[0][0] = A[0][0] * B[0][0];
+        if (n == 1) result[0][0] = A[0][0] * B[0][0];
 
         else if (n == 3) {
+            int[][] C = new int[3][3];
+
+            int m1 = (A[0][0] + A[0][1] + A[0][2] - A[1][0] - A[1][1] - A[2][1] - A[2][2])*B[1][1];
+            int m2 = (A[0][0] - A[1][0])*(-B[0][1] + B[1][1]);
+            int m3 = A[1][1] * (-B[0][0] + B[0][1] +B[1][0] - B[1][1] - B[1][2] - B[2][0] + B[2][2]);
+            int m4 = (-A[0][0] + A[1][0] + A[1][1]) * (B[0][0] - B[0][1] + B[1][1]);
+            int m5 = (A[1][0] + A[1][1]) * (-B[0][0] + B[0][1]);
+            int m6 = A[0][0] * B[0][0];
+            int m7 = (-A[0][0] + A[2][0] + A[2][1]) * (B[0][0] - B[0][2] + B[1][2]);
+            int m8 = (-A[0][0] + A[2][0]) * (B[0][2] - B[1][2]);
+            int m9 = (A[2][0] + A[2][1]) * (-B[0][0] + B[0][2]);
+            int m10 = (A[0][0] + A[0][1] + A[0][2] - A[1][1] - A[1][2] -B[2][0] + B[2][1]) * B[1][2];
+            int m11 = A[2][1] * (-B[0][0] + B[0][2] + B[1][0] - B[1][1] -B[1][2] - B[2][0] + B[2][1]);
+            int m12 = (-A[0][2] + A[2][1] + A[2][2]) * (B[1][1] + B[2][0] - B[2][1]);
+            int m13 = (A[0][2] - A[2][2]) * (B[1][1] - B[2][1]);
+            int m14 = A[0][2] * B[2][0];
+            int m15 = (A[2][1] + A[2][2]) * (-B[2][0] + B[2][1]);
+            int m16 = (-A[0][2] + A[1][1] + A[1][2]) * (B[1][2] + B[2][0] - B[2][2]);
+            int m17 = (A[0][2] - A[1][2]) * (B[1][2] - B[2][2]);
+            int m18 = (A[1][1] + A[1][2]) * (-B[2][0] + B[2][2]);
+            int m19 = A[0][1] * B[1][0];
+            int m20 = A[1][2] * B[2][1];
+            int m21 = A[1][0] * B[0][2];
+            int m22 = A[2][0] * B[0][1];
+            int m23 = A[2][2] * B[2][2];
+
+            C[0][0] = m6 + m14 + m19;
+            C[0][1] = m1 + m4 + m5 + m6 + m12 + m14 + m15; 
+            C[0][2] = m6 + m7 + m9 + m10 + m14 + m16 + m18;
+            C[1][0] = m2 + m3 + m4 + m6 + m14 + m16 + m17;
+            C[1][1] = m2 + m4 + m5 + m6 + m20; 
+            C[1][2] = m14 + m16 + m17 + m18 + m21;
+            C[2][0] = m6 + m7 + m8 + m11 + m12 + m13 + m14;
+            C[2][1] = m12 + m13 + m14 + m15 + m22; 
+            C[2][2] = m6 + m7 + m8 + m9 + m23;
+
+            combine(C, result, 0, 0);
+            printMatrix(result, "Result", size);
+        }/** else {
+            if (!checkSize(size, 3)) 
+            { 
+                matrix1 = appendMatrix(matrix1, size); 
+                matrix2 = appendMatrix(matrix2, size); 
+            }
 
             int[][] A11 = new int[nthird][nthird];
             int[][] A12 = new int[nthird][nthird];
@@ -229,42 +278,15 @@ public class MatrixCalc {
             printMatrix(A32, "A32", A32.length);
             printMatrix(A33, "A33", A33.length);
 
-
-            /**split(B, B11, 0, 0);
-            split(B, B12, 0, nhalf);
-            split(B, B13, 0, nhalf);
-            split(B, B21, nhalf, 0);
-            split(B, B22, nhalf, nhalf);
-            split(B, B23, nhalf, nhalf);
-            split(B, B31, nhalf, 0);
-            split(B, B32, nhalf, nhalf);
-            split(B, B33, nhalf, nhalf);**/
-
-            int m1 = (A[1][1] + A[1][2] + A[1][3] - A[2][1] - A[2][2] - A[3][2] - A[3][3])*B[2][2];
-            int m2 = (A[1][1] - A[2][1])*(-B[1][2] + B[2][2]);
-            int m3 = A[2][2] * (-B[1][1] + B[1][2] +B[2][1] - B[2][2] - B[2][3] - B[3][1] + B[3][3]);
-            int m4 = (-A[1][1] + A[2][1] + A[2][2]) * (B[1][1] - B[1][2] + B[2][2]);
-            int m5 = (A[2][1] + A[2][2]) * (-B[1][1] + B[1][2]);
-            int m6 = A[1][1] * B[1][1];
-            int m7 = (-A[1][1] + A[3][1] + A[3][2]) * (B[1][1] - B[1][3] + B[2][3]);
-            int m8 = (-A[1][1] + A[3][1]) * (B[1][3] - B[2][3]);
-            int m9 = (A[3][1] + A[3][2]) * (-B[1][1] + B[1][3]);
-            int m10 = (A[1][1] + A[1][2] + A[1][3] - A[2][2] - A[2][3] -B[3][1] + B[3][2]) * B[2][3];
-            int m11 = A[3][2] * (-B[1][1] + B[1][3] + B[2][1] - B[2][2] -B[2][3] - B[3][1] + B[3][2]);
-            int m12 = (-A[1][3] + A[3][2] + A[3][3]) * (B[2][2] + B[3][1] - B[3][2]);
-            int m13 = (A[1][3] - A[3][3]) * (B[2][2] - B[3][2]);
-            int m14 = A[1][3] * B[3][1];
-            int m15 = (A[3][2] + A[3][3]) * (-B[3][1] + B[3][2]);
-            int m16 = (-A[1][3] + A[2][2] + A[2][3]) * (B[2][3] + B[3][1] - B[3][3]);
-            int m17 = (A[1][3] - A[2][3]) * (B[2][3] - B[3][3]);
-            int m18 = (A[2][2] + A[2][3]) * (-B[3][1] + B[3][3]);
-            int m19 = A[1][2] * B[2][1];
-            int m20 = A[2][3] * B[3][2];
-            int m21 = A[2][1] * B[1][3];
-            int m22 = A[3][1] * B[1][2];
-            int m23 = A[3][3] * B[3][3];
-
-        } else {
+            split(B, B11, 0, 0);
+            split(B, B12, 0, nthird);
+            split(B, B13, 0, n2thirds);
+            split(B, B21, nthird, 0);
+            split(B, B22, nthird, nthird);
+            split(B, B23, nthird, n2thirds);
+            split(B, B31, n2thirds, 0);
+            split(B, B32, n2thirds, nthird);
+            split(B, B33, n2thirds, n2thirds);
 
             int[][] M1 = ladermanMult(minus(plus(plus(A11,A12), A13), minus(minus(A21, A22) , minus(A32, A33))), B22);
             int[][] M2 = ladermanMult(minus(A11, A21), minus(B22, B12));
@@ -291,9 +313,9 @@ public class MatrixCalc {
             int[][] M23 = ladermanMult( , );;
 
 
-        }**/
+        }*/
 
-        return product;
+        return result;
 
 
 
@@ -376,7 +398,7 @@ public class MatrixCalc {
                 count++;
             }
             if (size > newSize) newSize *= 2;
-            //System.out.println("Size: " + size + "\nNew Size: " + newSize);
+            System.out.println("Size: " + size + "\nNew Size: " + newSize);
 
             int[][] append = new int [newSize][newSize];
             for (int i = 0; i < newSize; i++) {
