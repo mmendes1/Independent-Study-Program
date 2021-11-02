@@ -30,7 +30,7 @@ import java.io.File;
 //CHECK RANDOM 10X10 MATRIX TO SEE IF CALCULATIONS ARE CORRECT
 public class MatrixCalc {
 
-    private static int size = 3;
+    private static int size = 4;
     private static int[][] matrix1;
     private static int[][] matrix2;
     private static long durationBasic, durationStrassen;
@@ -231,7 +231,7 @@ public class MatrixCalc {
 
             combine(C, result, 0, 0);
             printMatrix(result, "Result", size);
-        }/** else {
+        } else {
             if (!checkSize(size, 3)) 
             { 
                 matrix1 = appendMatrix(matrix1, size); 
@@ -288,32 +288,32 @@ public class MatrixCalc {
             split(B, B32, n2thirds, nthird);
             split(B, B33, n2thirds, n2thirds);
 
-            int[][] M1 = ladermanMult(minus(plus(plus(A11,A12), A13), minus(minus(A21, A22) , minus(A32, A33))), B22);
-            int[][] M2 = ladermanMult(minus(A11, A21), minus(B22, B12));
-            int[][] M3 = ladermanMult(A22 , plus(minus(minus(minus(plus(minus(B12, B11), B21), B22), B23), B31), B33));
-            int[][] M4 = ladermanMult(plus(minus(A21, A11), A22) , plus(minus(B11, B13)), B22);
-            int[][] M5 = ladermanMult(plus(A21, A22), minus(B12, B11));
-            int[][] M6 = ladermanMult(A11, B11);
-            int[][] M7 = ladermanMult(plus(minus(A31, A11), A32), plus(minus(B11, B13), B23));
-            int[][] M8 = ladermanMult(minus(A31, A11) , minus(B13, B23));;
-            int[][] M9 = ladermanMult(plus(A31,A32) , minus(B13,B11));
-            int[][] M10 = ladermanMult(minus(minus(minus(minus(plus(plus(A11, A12), A13), A22), A23), A31), A32), B23);
-            int[][] M11 = ladermanMult( , );;
-            int[][] M12 = ladermanMult( , );;
-            int[][] M13 = ladermanMult( , );;
-            int[][] M14 = ladermanMult( , );;
-            int[][] M15 = ladermanMult( , );;
-            int[][] M16 = ladermanMult( , );;
-            int[][] M17 = ladermanMult( , );;
-            int[][] M18 = ladermanMult( , );;
-            int[][] M19 = ladermanMult( , );;
-            int[][] M20 = ladermanMult( , );;
-            int[][] M21 = ladermanMult( , );;
-            int[][] M22 = ladermanMult( , );;
-            int[][] M23 = ladermanMult( , );;
+            /**int[][] M1 = ladermanMult( , );
+            int[][] M2 = ladermanMult( , );
+            int[][] M3 = ladermanMult( , );
+            int[][] M4 = ladermanMult( , );
+            int[][] M5 = ladermanMult( , );
+            int[][] M6 = ladermanMult( , );
+            int[][] M7 = ladermanMult( , );
+            int[][] M8 = ladermanMult( , );
+            int[][] M9 = ladermanMult( , );
+            int[][] M10 = ladermanMult( , );
+            int[][] M11 = ladermanMult( , );
+            int[][] M12 = ladermanMult( , );
+            int[][] M13 = ladermanMult( , );
+            int[][] M14 = ladermanMult( , );
+            int[][] M15 = ladermanMult( , );
+            int[][] M16 = ladermanMult( , );
+            int[][] M17 = ladermanMult( , );
+            int[][] M18 = ladermanMult( , );
+            int[][] M19 = ladermanMult( , );
+            int[][] M20 = ladermanMult( , );
+            int[][] M21 = ladermanMult( , );
+            int[][] M22 = ladermanMult( , );
+            int[][] M23 = ladermanMult( , );
+            **/
 
-
-        }*/
+        }
 
         return result;
 
