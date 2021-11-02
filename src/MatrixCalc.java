@@ -30,7 +30,7 @@ import java.io.File;
 //CHECK RANDOM 10X10 MATRIX TO SEE IF CALCULATIONS ARE CORRECT
 public class MatrixCalc {
 
-    private static int size = 4;
+    private static int size = 2;
     private static int[][] matrix1;
     private static int[][] matrix2;
     private static long durationBasic, durationStrassen;
@@ -41,7 +41,7 @@ public class MatrixCalc {
         MatrixCalc calc = new MatrixCalc();
 
         calc.createMatrices();
-        calc.ladermanMult(matrix1, matrix2);
+        calc.strassenMult(matrix1, matrix2);
 
         //result = calc.ladermanMult(matrix1, matrix2);
 
@@ -134,11 +134,8 @@ public class MatrixCalc {
         }
 
         else {
-            if (!checkSize(size, 2)) 
-            { 
-                matrix1 = appendMatrix(matrix1, size); 
-                matrix2 = appendMatrix(matrix2, size); 
-            }
+            matrix1 = appendMatrix(matrix1, size, true); 
+            matrix2 = appendMatrix(matrix2, size, true); 
 
             int[][] A11 = new int[nhalf][nhalf];
             int[][] A12 = new int[nhalf][nhalf];
@@ -232,11 +229,8 @@ public class MatrixCalc {
             combine(C, result, 0, 0);
             printMatrix(result, "Result", size);
         } else {
-            if (!checkSize(size, 3)) 
-            { 
-                matrix1 = appendMatrix(matrix1, size); 
-                matrix2 = appendMatrix(matrix2, size); 
-            }
+            matrix1 = appendMatrix(matrix1, size, false); 
+            matrix2 = appendMatrix(matrix2, size, false); 
 
             int[][] A11 = new int[nthird][nthird];
             int[][] A12 = new int[nthird][nthird];
@@ -267,16 +261,6 @@ public class MatrixCalc {
             split(A, A31, n2thirds, 0);
             split(A, A32, n2thirds, nthird);
             split(A, A33, n2thirds, n2thirds);
-
-            printMatrix(A11, "A11", A11.length);
-            printMatrix(A12, "A12", A12.length);
-            printMatrix(A13, "A13", A13.length);
-            printMatrix(A21, "A21", A21.length);
-            printMatrix(A22, "A22", A22.length);
-            printMatrix(A23, "A23", A23.length);
-            printMatrix(A31, "A31", A31.length);
-            printMatrix(A32, "A32", A32.length);
-            printMatrix(A33, "A33", A33.length);
 
             split(B, B11, 0, 0);
             split(B, B12, 0, nthird);
@@ -355,7 +339,7 @@ public class MatrixCalc {
     }
 
     // Function to check if x is power of 2
-    boolean checkSize(int n, int pow)
+    boolean checkPow(int n, int pow)
     {
         if(n==0)
             return false;
@@ -376,28 +360,57 @@ public class MatrixCalc {
         }
     }
 
-    int[][] appendMatrix(int[][] matrix, int size) {
+    int[][] appendMatrix(int[][] matrix, int size, boolean pow2) {
         int count = 0;
-        int newSize = 2, comp, power;
-        int[] powArr = new int[7];
-        powArr[0] = Math.abs(2 - size);
-        powArr[1] = Math.abs(4 - size);
-        powArr[2] = Math.abs(8 - size);
-        powArr[3] = Math.abs(16 - size);
-        powArr[4] = Math.abs(32 - size);
-        powArr[5] = Math.abs(64 - size);
-        powArr[6] = Math.abs(128 - size);
-            comp = powArr[0];
-            while (count < powArr.length) {
-                if (powArr[count] < comp) {
-                    comp = powArr[count];
+        int newSize = 0, comp, power;
+        int[] twoPowArr = new int[8], threePowArr = new int[6];
+        
+        if(pow2) {
+            newSize = 2;
+
+            twoPowArr[0] = Math.abs(2 - size);
+            twoPowArr[1] = Math.abs(4 - size);
+            twoPowArr[2] = Math.abs(8 - size);
+            twoPowArr[3] = Math.abs(16 - size);
+            twoPowArr[4] = Math.abs(32 - size);
+            twoPowArr[5] = Math.abs(64 - size);
+            twoPowArr[6] = Math.abs(128 - size);
+            twoPowArr[7] = Math.abs(256 - size);
+            
+            comp = twoPowArr[0];
+            while (count < twoPowArr.length) {
+                if (twoPowArr[count] < comp) {
+                    comp = twoPowArr[count];
                     power = count + 1;
                         newSize = (int)Math.pow(2.0, (double)count + 1);
                 }
                 //System.out.println("Val: " + powArr[count] +" Count: " + count + "\nNew Size: " + newSize);
                 count++;
             }
-            if (size > newSize) newSize *= 2;
+        if (size > newSize) newSize *= 2;
+        } else if(!pow2) {
+            System.out.println("WHy are you like this");
+            newSize = 3;
+
+            threePowArr[0] = Math.abs(3 - size);
+            threePowArr[1] = Math.abs(9 - size);
+            threePowArr[2] = Math.abs(27 - size);
+            threePowArr[3] = Math.abs(81 - size);
+            threePowArr[4] = Math.abs(243 - size);
+            threePowArr[5] = Math.abs(729 - size);
+            
+            comp = threePowArr[0];
+            while (count < threePowArr.length) {
+                if (threePowArr[count] < comp) {
+                    comp = threePowArr[count];
+                    power = count + 1;
+                        newSize = (int)Math.pow(3.0, (double)count + 1);
+                }
+                //System.out.println("Val: " + powArr[count] +" Count: " + count + "\nNew Size: " + newSize);
+                count++;
+            }
+        if (size > newSize) newSize *= 3;
+        }
             System.out.println("Size: " + size + "\nNew Size: " + newSize);
 
             int[][] append = new int [newSize][newSize];
@@ -441,4 +454,13 @@ public class MatrixCalc {
  System.out.println("An error occurred.");
  e.printStackTrace();
  }
+             printMatrix(A11, "A11", A11.length);
+            printMatrix(A12, "A12", A12.length);
+            printMatrix(A13, "A13", A13.length);
+            printMatrix(A21, "A21", A21.length);
+            printMatrix(A22, "A22", A22.length);
+            printMatrix(A23, "A23", A23.length);
+            printMatrix(A31, "A31", A31.length);
+            printMatrix(A32, "A32", A32.length);
+            printMatrix(A33, "A33", A33.length);
  }**/
