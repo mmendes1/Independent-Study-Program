@@ -30,9 +30,9 @@ import java.io.File;
 //CHECK RANDOM 10X10 MATRIX TO SEE IF CALCULATIONS ARE CORRECT
 public class MatrixCalc {
 
-    private static int size = 2;
-    private static int[][] matrix1;
-    private static int[][] matrix2;
+    private static int size = 4;
+    private static int[][] matrix1 = new int[4][4];
+    private static int[][] matrix2 = new int [4][4];
     private static long durationBasic, durationStrassen;
 
     public static void main(String[] args) {
@@ -40,8 +40,44 @@ public class MatrixCalc {
         int[][] result;
         MatrixCalc calc = new MatrixCalc();
 
+        //calc.createMatrices();
+
+        matrix1[0][0] = 1;
+        matrix1[0][1] = 2;
+        matrix1[0][2] = 0;
+        matrix1[0][3] = 0;
+        matrix1[1][0] = 0;
+        matrix1[1][1] = 1;
+        matrix1[1][2] = 2;
+        matrix1[1][3] = 0;
+        matrix1[2][0] = 0;
+        matrix1[2][1] = 0;
+        matrix1[2][2] = 1;
+        matrix1[2][3] = 2;
+        matrix1[3][0] = 0;
+        matrix1[3][1] = 3;
+        matrix1[3][2] = 2;
+        matrix1[3][3] = 1;
+
+        matrix2[0][0] = 0;
+        matrix2[0][1] = 0;
+        matrix2[0][2] = 2;
+        matrix2[0][3] = 1;
+        matrix2[1][0] = 0;
+        matrix2[1][1] = 1;
+        matrix2[1][2] = 2;
+        matrix2[1][3] = 0;
+        matrix2[2][0] = 1;
+        matrix2[2][1] = 2;
+        matrix2[2][2] = 0;
+        matrix2[2][3] = 0;
+        matrix2[3][0] = 0;
+        matrix2[3][1] = 0;
+        matrix2[3][2] = 1;
+        matrix2[3][3] = 1;
+
         calc.createMatrices();
-        calc.strassenMult(matrix1, matrix2);
+        calc.ladermanMult(matrix1, matrix2);
 
         //result = calc.ladermanMult(matrix1, matrix2);
 
@@ -68,6 +104,9 @@ public class MatrixCalc {
     }
 
     public void createMatrices() {
+        matrix1 = appendMatrix(matrix1, size, false); 
+        matrix2 = appendMatrix(matrix2, size, false); 
+        /**
         Random rand = new Random();
 
         matrix1 = new int[size][size];
@@ -88,7 +127,7 @@ public class MatrixCalc {
                 matrix2[i][j] = random;
             }
         }
-        printMatrix(matrix2, "Matrix 2", size);
+        printMatrix(matrix2, "Matrix 2", size);**/
     }
 
     public int[][] basicMult (int[][] A, int[][] B) {
@@ -188,7 +227,16 @@ public class MatrixCalc {
         int nthird = n/3, n2thirds = 2 * nthird;
 
         if (n == 1) result[0][0] = A[0][0] * B[0][0];
-
+        else if (n == 2) 
+        {
+            A = appendMatrix(A, size, false); 
+            B = appendMatrix(B, size, false);
+                n = A.length;
+                result = new int[n][n];
+                nthird = n/3;
+                n2thirds = 2 * nthird;
+    
+        }
         else if (n == 3) {
             int[][] C = new int[3][3];
 
@@ -201,7 +249,7 @@ public class MatrixCalc {
             int m7 = (-A[0][0] + A[2][0] + A[2][1]) * (B[0][0] - B[0][2] + B[1][2]);
             int m8 = (-A[0][0] + A[2][0]) * (B[0][2] - B[1][2]);
             int m9 = (A[2][0] + A[2][1]) * (-B[0][0] + B[0][2]);
-            int m10 = (A[0][0] + A[0][1] + A[0][2] - A[1][1] - A[1][2] -B[2][0] + B[2][1]) * B[1][2];
+            int m10 = (A[0][0] + A[0][1] + A[0][2] - A[1][1] - A[1][2] - A[2][0] - A[2][1]) * B[1][2];
             int m11 = A[2][1] * (-B[0][0] + B[0][2] + B[1][0] - B[1][1] -B[1][2] - B[2][0] + B[2][1]);
             int m12 = (-A[0][2] + A[2][1] + A[2][2]) * (B[1][1] + B[2][0] - B[2][1]);
             int m13 = (A[0][2] - A[2][2]) * (B[1][1] - B[2][1]);
@@ -227,11 +275,13 @@ public class MatrixCalc {
             C[2][2] = m6 + m7 + m8 + m9 + m23;
 
             combine(C, result, 0, 0);
-            printMatrix(result, "Result", size);
         } else {
-            matrix1 = appendMatrix(matrix1, size, false); 
-            matrix2 = appendMatrix(matrix2, size, false); 
-
+            appendMatrix(A, size, false);
+            appendMatrix(B, size, false);
+                n = A.length;
+                result = new int[n][n];
+                nthird = n/3;
+                n2thirds = 2 * nthird;
             int[][] A11 = new int[nthird][nthird];
             int[][] A12 = new int[nthird][nthird];
             int[][] A13 = new int[nthird][nthird];
@@ -278,33 +328,33 @@ public class MatrixCalc {
             int[][] M4 = ladermanMult(plus(minus(A21, A11), A22), plus(minus(B11, B12), B22));
             int[][] M5 = ladermanMult(plus(A21, A22), minus(B12, B11));
             int[][] M6 = ladermanMult(A11, B11);
-            int[][] M7 = ladermanMult( , );
-            int[][] M8 = ladermanMult( , );
-            int[][] M9 = ladermanMult( , );
-            int[][] M10 = ladermanMult( , );
-            int[][] M11 = ladermanMult( , );
-            int[][] M12 = ladermanMult( , );
-            int[][] M13 = ladermanMult( , );
-            int[][] M14 = ladermanMult( , );
-            int[][] M15 = ladermanMult( , );
-            int[][] M16 = ladermanMult( , );
-            int[][] M17 = ladermanMult( , );
-            int[][] M18 = ladermanMult( , );
-            int[][] M19 = ladermanMult( , );
-            int[][] M20 = ladermanMult( , );
-            int[][] M21 = ladermanMult( , );
-            int[][] M22 = ladermanMult( , );
-            int[][] M23 = ladermanMult( , );
+            int[][] M7 = ladermanMult(plus(minus(A31, A11), A32), plus(minus(B11, B13), B23));
+            int[][] M8 = ladermanMult(minus(A31, A11), minus(B13, B23));
+            int[][] M9 = ladermanMult(plus(A31, A32), minus(B13, B11));
+            int[][] M10 = ladermanMult(minus(minus(minus(minus(plus(plus(A11, A12), A13), A22), A23), A31), A32), B23);
+            int[][] M11 = ladermanMult(A32, plus(minus(minus(minus(plus(minus(B13, B11), B21), B22), B23), B31), B32));
+            int[][] M12 = ladermanMult(plus(minus(A32, A13), A33), minus(plus(B22, B31), B32));
+            int[][] M13 = ladermanMult(minus(A13, A33), minus(B22, B32));
+            int[][] M14 = ladermanMult(A13, B31);
+            int[][] M15 = ladermanMult(plus(A32, A33), minus(B32, B31));
+            int[][] M16 = ladermanMult(plus(minus(A22, A13), A23), minus(plus(B23, B31), B33));
+            int[][] M17 = ladermanMult(minus(A13, A23), minus(B23, B33));
+            int[][] M18 = ladermanMult(plus(A22, A23), minus(B33, B31));
+            int[][] M19 = ladermanMult(A12, B21);
+            int[][] M20 = ladermanMult(A23, B32);
+            int[][] M21 = ladermanMult(A21, B13);
+            int[][] M22 = ladermanMult(A31, B12);
+            int[][] M23 = ladermanMult(A33, B33);
 
-            int[][] C11 = ;
-            int[][] C12 = ;
-            int[][] C13 = ;
-            int[][] C21 = ;
-            int[][] C22 = ;
-            int[][] C23 = ;
-            int[][] C31 = ;
-            int[][] C32 = ;
-            int[][] C33 = ;
+            int[][] C11 = plus(plus(M6, M14), M19);
+            int[][] C12 = plus(plus(plus(plus(plus(plus(M1, M4), M5), M6), M12), M14), M15);
+            int[][] C13 = plus(plus(plus(plus(plus(plus(M6, M7), M9), M10), M14), M16), M18);
+            int[][] C21 = plus(plus(plus(plus(plus(plus(M2, M3), M4), M6), M14), M16), M17);
+            int[][] C22 = plus(plus(plus(plus(M2, M4), M5), M6), M20);
+            int[][] C23 = plus(plus(plus(plus(M14, M16), M17), M18), M21);
+            int[][] C31 = plus(plus(plus(plus(plus(plus(M6, M7), M8), M11), M12), M13), M14);
+            int[][] C32 = plus(plus(plus(plus(M12, M13), M14), M15), M22);
+            int[][] C33 = plus(plus(plus(plus(M6, M7), M8), M9), M23);
 
             combine(C11, result, 0, 0);
             combine(C12, result, 0, nthird);
@@ -316,6 +366,8 @@ public class MatrixCalc {
             combine(C32, result, n2thirds, nthird);
             combine(C33, result, n2thirds, n2thirds);
         }
+        System.out.println("Size: " + result.length);
+        printMatrix(result, "Result", result.length);
         return result;
     }
 
@@ -403,9 +455,8 @@ public class MatrixCalc {
             }
         if (size > newSize) newSize *= 2;
         } else if(!pow2) {
-            System.out.println("WHy are you like this");
             newSize = 3;
-
+            System.out.println("Is it actually doing this?");
             threePowArr[0] = Math.abs(3 - size);
             threePowArr[1] = Math.abs(9 - size);
             threePowArr[2] = Math.abs(27 - size);
@@ -439,7 +490,7 @@ public class MatrixCalc {
                     append[i][j] = matrix[i][j];
                 }
             }
-            //printMatrix(append, "Appended Matrix: ", newSize);
+            printMatrix(append, "Appended Matrix: ", newSize);
 
         return append;
     }
