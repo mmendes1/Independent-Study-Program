@@ -43,9 +43,6 @@ public class MatrixCalc {
         calc.createMatrices(false);
         calc.ladermanMult(matrix1, matrix2);
 
-        //result = calc.ladermanMult(matrix1, matrix2);
-
-        //calc.printMatrix(result, "Result", size);
         /**while (x < 50) {
             calc.createMatrices();
             long strassenStartTime = System.nanoTime();
@@ -64,7 +61,8 @@ public class MatrixCalc {
         durationBasic *= (-1);
         durationStrassen *= (-1);
             System.out.println("\nStrassen's Method\n-----------------\nTotal runs: " + x + "\nRuntime = " + (double)durationStrassen/1000000000 + " s, " + durationStrassen/1000000 + " ms");
-            System.out.println("\nBasic Method\n-----------------\nTotal runs: " + x + "\nRuntime = " + (double)durationBasic/1000000000 + " s, " + durationBasic/1000000 + " ms");**/
+            System.out.println("\nBasic Method\n-----------------\nTotal runs: " + x + "\nRuntime = " + (double)durationBasic/1000000000 + " s, " + durationBasic/1000000 + " ms");
+    **/
     }
 
     public void createMatrices(boolean pow2) {
