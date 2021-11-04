@@ -40,43 +40,7 @@ public class MatrixCalc {
         int[][] result;
         MatrixCalc calc = new MatrixCalc();
 
-        //calc.createMatrices();
-
-        matrix1[0][0] = 1;
-        matrix1[0][1] = 2;
-        matrix1[0][2] = 0;
-        matrix1[0][3] = 0;
-        matrix1[1][0] = 0;
-        matrix1[1][1] = 1;
-        matrix1[1][2] = 2;
-        matrix1[1][3] = 0;
-        matrix1[2][0] = 0;
-        matrix1[2][1] = 0;
-        matrix1[2][2] = 1;
-        matrix1[2][3] = 2;
-        matrix1[3][0] = 0;
-        matrix1[3][1] = 3;
-        matrix1[3][2] = 2;
-        matrix1[3][3] = 1;
-
-        matrix2[0][0] = 0;
-        matrix2[0][1] = 0;
-        matrix2[0][2] = 2;
-        matrix2[0][3] = 1;
-        matrix2[1][0] = 0;
-        matrix2[1][1] = 1;
-        matrix2[1][2] = 2;
-        matrix2[1][3] = 0;
-        matrix2[2][0] = 1;
-        matrix2[2][1] = 2;
-        matrix2[2][2] = 0;
-        matrix2[2][3] = 0;
-        matrix2[3][0] = 0;
-        matrix2[3][1] = 0;
-        matrix2[3][2] = 1;
-        matrix2[3][3] = 1;
-
-        calc.createMatrices();
+        calc.createMatrices(false);
         calc.ladermanMult(matrix1, matrix2);
 
         //result = calc.ladermanMult(matrix1, matrix2);
@@ -103,10 +67,8 @@ public class MatrixCalc {
             System.out.println("\nBasic Method\n-----------------\nTotal runs: " + x + "\nRuntime = " + (double)durationBasic/1000000000 + " s, " + durationBasic/1000000 + " ms");**/
     }
 
-    public void createMatrices() {
-        matrix1 = appendMatrix(matrix1, size, false); 
-        matrix2 = appendMatrix(matrix2, size, false); 
-        /**
+    public void createMatrices(boolean pow2) {
+        
         Random rand = new Random();
 
         matrix1 = new int[size][size];
@@ -116,18 +78,18 @@ public class MatrixCalc {
                     matrix1[i][j] = random;
             }
         }
+        matrix1 = appendMatrix(matrix1, size, pow2);
         printMatrix(matrix1, "Matrix 1", size);
-
 
         matrix2 = new int[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 int random = 1 + rand.nextInt(1 + 2) - 1;
-                //System.out.println("Value: " + random);
                 matrix2[i][j] = random;
             }
         }
-        printMatrix(matrix2, "Matrix 2", size);**/
+        matrix2 = appendMatrix(matrix2, size, pow2);
+        printMatrix(matrix2, "Matrix 2", size);
     }
 
     public int[][] basicMult (int[][] A, int[][] B) {
@@ -190,11 +152,6 @@ public class MatrixCalc {
             split(A, A21, nhalf, 0);
             split(A, A22, nhalf, nhalf);
 
-            printMatrix(A11,"A11: ", nhalf);
-            printMatrix(A12,"A12: ", nhalf);
-            printMatrix(A21,"A21: ", nhalf);
-            printMatrix(A22,"A22: ", nhalf);
-
             split(B, B11, 0, 0);
             split(B, B12, 0, nhalf);
             split(B, B21, nhalf, 0);
@@ -227,16 +184,6 @@ public class MatrixCalc {
         int nthird = n/3, n2thirds = 2 * nthird;
 
         if (n == 1) result[0][0] = A[0][0] * B[0][0];
-        else if (n == 2) 
-        {
-            A = appendMatrix(A, size, false); 
-            B = appendMatrix(B, size, false);
-                n = A.length;
-                result = new int[n][n];
-                nthird = n/3;
-                n2thirds = 2 * nthird;
-    
-        }
         else if (n == 3) {
             int[][] C = new int[3][3];
 
@@ -276,12 +223,7 @@ public class MatrixCalc {
 
             combine(C, result, 0, 0);
         } else {
-            appendMatrix(A, size, false);
-            appendMatrix(B, size, false);
-                n = A.length;
-                result = new int[n][n];
-                nthird = n/3;
-                n2thirds = 2 * nthird;
+            System.out.println("n: " + n);
             int[][] A11 = new int[nthird][nthird];
             int[][] A12 = new int[nthird][nthird];
             int[][] A13 = new int[nthird][nthird];
@@ -323,7 +265,7 @@ public class MatrixCalc {
             split(B, B33, n2thirds, n2thirds);
 
             int[][] M1 = ladermanMult(minus(minus(minus(minus(plus(plus(A11, A12), A13), A21), A22), A32), A33), B22);
-            int[][] M2 = ladermanMult(minus(A11, A12), minus(B22, B12));
+            int[][] M2 = ladermanMult(minus(A11, A21), minus(B22, B12));
             int[][] M3 = ladermanMult(A22, plus(minus(minus(minus(plus(minus(B12, B11), B21), B22), B23), B31), B33));
             int[][] M4 = ladermanMult(plus(minus(A21, A11), A22), plus(minus(B11, B12), B22));
             int[][] M5 = ladermanMult(plus(A21, A22), minus(B12, B11));
@@ -357,6 +299,7 @@ public class MatrixCalc {
             int[][] C33 = plus(plus(plus(plus(M6, M7), M8), M9), M23);
 
             combine(C11, result, 0, 0);
+
             combine(C12, result, 0, nthird);
             combine(C13, result, 0, n2thirds);
             combine(C21, result, nthird, 0);
@@ -366,8 +309,7 @@ public class MatrixCalc {
             combine(C32, result, n2thirds, nthird);
             combine(C33, result, n2thirds, n2thirds);
         }
-        System.out.println("Size: " + result.length);
-        printMatrix(result, "Result", result.length);
+        if(result.length > 3 ) printMatrix(result, "Result", size);
         return result;
     }
 
@@ -456,7 +398,6 @@ public class MatrixCalc {
         if (size > newSize) newSize *= 2;
         } else if(!pow2) {
             newSize = 3;
-            System.out.println("Is it actually doing this?");
             threePowArr[0] = Math.abs(3 - size);
             threePowArr[1] = Math.abs(9 - size);
             threePowArr[2] = Math.abs(27 - size);
@@ -476,7 +417,7 @@ public class MatrixCalc {
             }
         if (size > newSize) newSize *= 3;
         }
-            System.out.println("Size: " + size + "\nNew Size: " + newSize);
+            //System.out.println("Size: " + size + "\nNew Size: " + newSize);
 
             int[][] append = new int [newSize][newSize];
             for (int i = 0; i < newSize; i++) {
@@ -490,7 +431,7 @@ public class MatrixCalc {
                     append[i][j] = matrix[i][j];
                 }
             }
-            printMatrix(append, "Appended Matrix: ", newSize);
+            //printMatrix(append, "Appended Matrix: ", newSize);
 
         return append;
     }
