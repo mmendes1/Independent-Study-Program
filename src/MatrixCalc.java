@@ -11,7 +11,7 @@ import java.io.File;
 
 public class MatrixCalc {
     private boolean matrix = false;
-    private static int size = 16, userIn, ceiling = 20;
+    private static int size = 16, userIn, ceiling = 20, runCeiling = 15;
     private static int[][] matrix1;
     private static int[][] matrix2;
     private static long durationBasic, durationStrassen, durationLaderman;
@@ -21,7 +21,7 @@ public class MatrixCalc {
         MatrixCalc calc = new MatrixCalc();
 
         do{
-            System.out.println("\nPlease selected one of the following options...\n------------------------------------------------------\n    1. Set size of matrices\n    2. Run standard time trial\n    3. Run Basic\n    4. Run Strassen's\n    5. Run Laderman's\n    6. Set Random Value Range for Matrices\n    7. Toggle Matrix mode\n    0. Exit");
+            System.out.println("\nPlease selected one of the following options...\n------------------------------------------------------\n    1. Set size of matrices\n    2. Run standard time trial\n    3. Run Basic\n    4. Run Strassen's\n    5. Run Laderman's\n    6. Set Random Value Range for Matrices\n    7. Set Amount of Runs for Time Trial\n    8. Toggle Matrix mode\n    0. Exit");
             userIn = input.nextInt();
 
             switch (userIn)
@@ -40,7 +40,7 @@ public class MatrixCalc {
                         break;
                 case 4:
                     calc.createMatrices(true, false);
-                    calc.printMatrix(calc.strassenMult(matrix1, matrix2), "Result", size + 1);
+                    calc.printMatrix(calc.strassenMult(matrix1, matrix2), "Result", size);
                         break;
                 case 5:
                     calc.createMatrices(false, false);
@@ -51,6 +51,10 @@ public class MatrixCalc {
                    ceiling = input.nextInt();
                         break;
                 case 7:
+                    System.out.println("Please enter the amount of runs to be done per time trial.");
+                    runCeiling = input.nextInt();
+                        break;
+                case 8:
                     System.out.println("Matrix mode has been toogled " + calc.toggleMatrixMode());
                         break;
                 case 0:
@@ -374,7 +378,7 @@ public class MatrixCalc {
         int[][] result;
         MatrixCalc calc = new MatrixCalc();
 
-        while (x < 50) {
+        while (x < runCeiling) {
             calc.createMatrices(true, true);
             long basicStartTime = System.nanoTime();
             result = calc.basicMult(matrix1, matrix2);
