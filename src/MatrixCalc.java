@@ -6,88 +6,96 @@
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Random;
+import java.util.Scanner;
 import java.io.File;
 
-/** FOR NEXT TIME
- *     Changing matrix testing loop
- *        let m = matrix size
- *        m    Basic         Strassen       Laderman
- *        -----------------------------------------------
- *        2    100(2x2)      100(2x2)       N/A
- *        ...
- *        10   100 (10x10)   100 (10x10)    100 (10x10)
- *        20   100 (20x20)   100 (20x20)    100 (20x20)
- *        30   etc...
- *        ...
- *        100
- *        -----------------------------------------------
- *        Keep track of amount of time to do 100 cases
- *        '
- *        ALSO FOR SPLITTING MATRICES
- *        test with 3x3 matricies, HAVE TO MAKE MATRIX CREATION WORK FOR 3X3 AND POWER CHECKING ETC..
- */
-
-//CHECK RANDOM 10X10 MATRIX TO SEE IF CALCULATIONS ARE CORRECT
 public class MatrixCalc {
-
-    private static int size = 4;
-    private static int[][] matrix1 = new int[4][4];
-    private static int[][] matrix2 = new int [4][4];
-    private static long durationBasic, durationStrassen;
+    private boolean matrix = false;
+    private static int size = 16, userIn, ceiling = 20;
+    private static int[][] matrix1;
+    private static int[][] matrix2;
+    private static long durationBasic, durationStrassen, durationLaderman;
 
     public static void main(String[] args) {
-        int x = 0;
-        int[][] result;
+        Scanner input = new Scanner(System.in);
         MatrixCalc calc = new MatrixCalc();
 
-        calc.createMatrices(false);
-        calc.ladermanMult(matrix1, matrix2);
+        do{
+            System.out.println("\nPlease selected one of the following options...\n------------------------------------------------------\n    1. Set size of matrices\n    2. Run standard time trial\n    3. Run Basic\n    4. Run Strassen's\n    5. Run Laderman's\n    6. Set Random Value Range for Matrices\n    7. Toggle Matrix mode\n    0. Exit");
+            userIn = input.nextInt();
 
-        /**while (x < 50) {
-            calc.createMatrices();
-            long strassenStartTime = System.nanoTime();
-                result = calc.strassenMult(matrix1, matrix2);
-                    calc.fixResult(result);
-                    //calc.printMatrix(result, "Strassen Matrix", size);
-                    durationStrassen += strassenStartTime - System.nanoTime();
-
-            long basicStartTime = System.nanoTime();
-                result = calc.basicMult(matrix1, matrix2);
-                    //calc.printMatrix(result, "\nBasic Matrix", size);
-                    durationBasic += basicStartTime - System.nanoTime();
-
-            x++;
-        }
-        durationBasic *= (-1);
-        durationStrassen *= (-1);
-            System.out.println("\nStrassen's Method\n-----------------\nTotal runs: " + x + "\nRuntime = " + (double)durationStrassen/1000000000 + " s, " + durationStrassen/1000000 + " ms");
-            System.out.println("\nBasic Method\n-----------------\nTotal runs: " + x + "\nRuntime = " + (double)durationBasic/1000000000 + " s, " + durationBasic/1000000 + " ms");
-    **/
+            switch (userIn)
+            {
+                case 1:
+                    System.out.println("Please enter the size of the matrices.");
+                    userIn = input.nextInt();
+                        size = userIn;
+                        break;
+                case 2:
+                    calc.timeTrial();
+                        break;
+                case 3:
+                    calc.createMatrices(true, true);
+                    calc.printMatrix(calc.basicMult(matrix1, matrix2), "Result", size);
+                        break;
+                case 4:
+                    calc.createMatrices(true, false);
+                    calc.printMatrix(calc.strassenMult(matrix1, matrix2), "Result", size + 1);
+                        break;
+                case 5:
+                    calc.createMatrices(false, false);
+                    calc.printMatrix(calc.ladermanMult(matrix1, matrix2), "Result", size);
+                        break;
+                case 6:
+                   System.out.println("Please enter a ceiling value for random values.");
+                   ceiling = input.nextInt();
+                        break;
+                case 7:
+                    System.out.println("Matrix mode has been toogled " + calc.toggleMatrixMode());
+                        break;
+                case 0:
+                    System.out.println("Goodbye!");
+                        return;
+                default: break;
+            }
+        }while(userIn != 0);
+    
     }
 
-    public void createMatrices(boolean pow2) {
+    private String toggleMatrixMode () 
+    { 
+        if(matrix) {
+            matrix = false;
+            return "off."; 
+        } else if(!matrix) {
+            matrix = true;
+            return "on.";
+        } else return "ERROR: Did not toggle.";  
+    }
+
+    public void createMatrices(boolean pow2, boolean basic) {
         
         Random rand = new Random();
 
         matrix1 = new int[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                int random = rand.nextInt(1 + 2) - 1;
+                int random = rand.nextInt(1 + ceiling) - 1;
                     matrix1[i][j] = random;
             }
         }
-        matrix1 = appendMatrix(matrix1, size, pow2);
-        printMatrix(matrix1, "Matrix 1", size);
+        if(!basic) matrix1 = appendMatrix(matrix1, size, pow2);
+        if(matrix) printMatrix(matrix1, "Matrix 1", size);
 
         matrix2 = new int[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                int random = 1 + rand.nextInt(1 + 2) - 1;
+                int random = 1 + rand.nextInt(1 + ceiling) - 1;
                 matrix2[i][j] = random;
             }
         }
-        matrix2 = appendMatrix(matrix2, size, pow2);
-        printMatrix(matrix2, "Matrix 2", size);
+        if(!basic) matrix2 = appendMatrix(matrix2, size, pow2);
+        if(matrix) printMatrix(matrix2, "Matrix 2", size);
     }
 
     public int[][] basicMult (int[][] A, int[][] B) {
@@ -116,26 +124,23 @@ public class MatrixCalc {
 
             //Strassen's method for 2x2;
 
-            int m1 = (A[0][0] + A[1][1])*(B[0][0] + B[1][1]);
-            int m2 = (A[1][0] + A[1][1])*B[0][0];
-            int m3 = A[0][0]*(B[0][1] - B[1][1]);
-            int m4 = A[1][1]*(-B[0][0] + B[1][0]);
-            int m5 = (A[0][0] + A[0][1])*B[1][1];
-            int m6 = (-A[0][0] + A[1][0])*(B[0][0] + B[0][1]);
-            int m7 = (A[0][1] - A[1][1])*(B[1][0] + B[1][1]);
+            int m1 = (A[0][0] + A[1][1]) * (B[0][0] + B[1][1]);
+            int m2 = (A[1][0] + A[1][1]) * B[0][0];
+            int m3 = A[0][0] * (B[0][1] - B[1][1]);
+            int m4 = A[1][1] * (B[1][0] - B[0][0]);
+            int m5 = (A[0][0] + A[0][1]) * B[1][1];
+            int m6 = (A[1][0] - A[0][0]) * (B[0][0] + B[0][1]);
+            int m7 = (A[0][1] - A[1][1]) * (B[1][0] + B[1][1]);
 
             C[0][0] = m1 + m4 - m5 + m7;
-            C[0][1] = m2 + m4;
-            C[1][0] = m3 + m5;
+            C[0][1] = m3 + m5;
+            C[1][0] = m2 + m4;
             C[1][1] = m1 + m3 - m2 + m6;
 
             combine(C, result, 0, 0);
         }
 
         else {
-            matrix1 = appendMatrix(matrix1, size, true); 
-            matrix2 = appendMatrix(matrix2, size, true); 
-
             int[][] A11 = new int[nhalf][nhalf];
             int[][] A12 = new int[nhalf][nhalf];
             int[][] A21 = new int[nhalf][nhalf];
@@ -221,7 +226,6 @@ public class MatrixCalc {
 
             combine(C, result, 0, 0);
         } else {
-            System.out.println("n: " + n);
             int[][] A11 = new int[nthird][nthird];
             int[][] A12 = new int[nthird][nthird];
             int[][] A13 = new int[nthird][nthird];
@@ -307,7 +311,7 @@ public class MatrixCalc {
             combine(C32, result, n2thirds, nthird);
             combine(C33, result, n2thirds, n2thirds);
         }
-        if(result.length > 3 ) printMatrix(result, "Result", size);
+        if(matrix) if(result.length > size ) printMatrix(result, "Result", size);
         return result;
     }
 
@@ -358,12 +362,44 @@ public class MatrixCalc {
             for (int j = 1; j < result.length; j++) {
                 if (i % 2 == 0 && j % 2 != 0) {
                     int swap = result[i][j];
-                    //System.out.println("Swapped Value: " + swap);
                     result[i][j] = result[i + 1][j - 1];
                     result[i + 1][j - 1] = swap;
                 }
             }
         }
+    }
+
+    void timeTrial () {
+        int x = 0;
+        int[][] result;
+        MatrixCalc calc = new MatrixCalc();
+
+        while (x < 50) {
+            calc.createMatrices(true, true);
+            long basicStartTime = System.nanoTime();
+            result = calc.basicMult(matrix1, matrix2);
+                if(matrix)calc.printMatrix(result, "\nBasic Matrix", size);
+                durationBasic += basicStartTime - System.nanoTime();
+            
+            calc.createMatrices(true, false);
+            long strassenStartTime = System.nanoTime();
+                result = calc.strassenMult(matrix1, matrix2);
+                    if(matrix) calc.printMatrix(result, "Strassen Matrix", size);
+                    durationStrassen += strassenStartTime - System.nanoTime();
+
+            calc.createMatrices(false, false);
+            long ladermanStartTime = System.nanoTime();
+                result = calc.ladermanMult(matrix1, matrix2);
+                if(matrix) calc.printMatrix(result, "\nLaderman Matrix", size);
+                durationLaderman += ladermanStartTime - System.nanoTime();
+            x++;
+        }
+        durationBasic *= (-1);
+        durationStrassen *= (-1);
+        durationLaderman *= (-1);
+            System.out.println("\nBasic Method\n-----------------\nTotal runs: " + x + "\nRuntime = " + (double)durationBasic/1000000000 + " s, " + durationBasic/1000000 + " ms");
+            System.out.println("\nStrassen's Method\n-----------------\nTotal runs: " + x + "\nRuntime = " + (double)durationStrassen/1000000000 + " s, " + durationStrassen/1000000 + " ms");
+            System.out.println("\nLaderman's Method\n-----------------\nTotal runs: " + x + "\nRuntime = " + (double)durationLaderman/1000000000 + " s, " + durationLaderman/1000000 + " ms\n\n");
     }
 
     int[][] appendMatrix(int[][] matrix, int size, boolean pow2) {
@@ -467,4 +503,25 @@ public class MatrixCalc {
             printMatrix(A31, "A31", A31.length);
             printMatrix(A32, "A32", A32.length);
             printMatrix(A33, "A33", A33.length);
- }**/
+
+            
+    /** FOR NEXT TIME
+     *     Changing matrix testing loop
+     *        let m = matrix size
+     *        m    Basic         Strassen       Laderman
+     *        -----------------------------------------------
+     *        2    100(2x2)      100(2x2)       N/A
+     *        ...
+     *        10   100 (10x10)   100 (10x10)    100 (10x10)
+     *        20   100 (20x20)   100 (20x20)    100 (20x20)
+     *        30   etc...
+     *        ...
+     *        100
+     *        -----------------------------------------------
+     *        Keep track of amount of time to do 100 cases
+     *        '
+     *        ALSO FOR SPLITTING MATRICES
+     *        test with 3x3 matricies, HAVE TO MAKE MATRIX CREATION WORK FOR 3X3 AND POWER CHECKING ETC..
+     */
+
+    //CHECK RANDOM 10X10 MATRIX TO SEE IF CALCULATIONS ARE CORRECT
